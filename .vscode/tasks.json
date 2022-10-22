@@ -1,0 +1,24 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "bmx",
+			"make": "application",
+			"source": "${workspaceFolder}/src/modget.bmx",
+			"output": "output/bin/modget",
+			"architecture": "x64",
+			"debug": false,
+			"apptype": "console",
+			"funcargcasting": "warning",
+			"problemMatcher": [
+				"$blitzmax",
+				"$gcc"
+			],
+			"label": "Modget - Console",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
