@@ -61,27 +61,30 @@ Type TModDatabase
 		CloseStream( stream )
 	EndMethod
 	
-	Method GetFromFile:TModEntry( text:String )
+	Method GetFromUnique:TModEntry( text:String )
 		text = text.ToLower()
 		For Local e:TModEntry = EachIn Self.Mods
-			If e.File.ToLower() = text Then Return e
+			If e.Unique.ToLower() = text Then Return e
 		Next
 	EndMethod
 	
-	Method GetFromTitle:TModEntry( text:String )
+	Method Search:TList( text:String, artistFilter:String, fileFilter:String, trackerFilter:String )
 		text = text.ToLower()
-		For Local e:TModEntry = EachIn Self.Mods
-			If e.Title.ToLower() = text Then Return e
-		Next
-	EndMethod
-	
-	Method Search:TList( text:String )
-		text = text.ToLower()
+		
+		artistFilter = artistFilter.ToLower()
+		fileFilter = fileFilter.ToLower()
+		trackerFilter = trackerFilter.ToLower()
+		
 		Self.LastSearch.Clear()
 		
 		Local match:TSearchEntry
 		
 		For Local e:TModEntry = EachIn Self.Mods
+			' Check filters
+			If artistFilter And e.Artist.ToLower() <> artistFilter Then Continue
+			If fileFilter And e.Title.ToLower() <> fileFilter Then Continue
+			If trackerFilter And e.Tracker.ToLower() <> trackerFilter Then Continue
+			
 			' Reset match
 			match = Null
 			
@@ -95,6 +98,12 @@ Type TModDatabase
 			If e.Artist.ToLower().Contains( text ) Then
 				If Not match Then match = New TSearchEntry( e )
 				match.AddMatchTag( "artist" )
+			EndIf
+			
+			' Match by tracker
+			If e.Tracker.ToLower().Contains( text ) Then
+				If Not match Then match = New TSearchEntry( e )
+				match.AddMatchTag( "tracker" )
 			EndIf
 			
 			' Add if this is a match

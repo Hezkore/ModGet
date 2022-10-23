@@ -4,6 +4,7 @@ Import brl.volumes
 Import net.libcurl
 Import archive.zip
 
+Const OptionPrefix:String = "-"
 Global SupportedFormats:String[] = [".xm", ".it", ".mod", ".s3m"]
 Const FTP:String = "ftp.modland.com/"
 Const ModFTPPath:String = "pub/modules/"
@@ -99,12 +100,42 @@ Function ExtractCache()
 	EndIf
 EndFunction
 
-Function AppArgsFrom:String( index:Int )
+' Return the first application argument command
+Function AppArgsCommand:String()
+	Local i:Int = 1
+	While i < AppArgs.Length
+		If AppArgs[i].StartsWith( OptionPrefix ) Then
+			i:+2
+			Continue
+		EndIf
+		Return AppArgs[i]
+	Wend
+EndFunction
+
+' Combine all arguments (excluding options and command) into one string
+Function AppArgsConcat:String()
 	Local data:String
-	For Local i:int = index Until AppArgs.Length
-		data:+AppArgs[i] + " "
-	Next
+	Local i:Int = 1
+	Local foundCmd:Int
+	While i < AppArgs.Length
+		If AppArgs[i].StartsWith( OptionPrefix ) Then
+			i:+2
+			Continue
+		EndIf
+		If foundCmd Then
+			data:+AppArgs[i] + " "
+		Else foundCmd = True EndIf
+		i:+1
+	Wend
 	Return data[..data.Length-1]
+EndFunction
+
+' Get a specific application argument option data
+Function AppArgsOption:String( opt:String )
+	If Not opt.StartsWith( OptionPrefix ) Then opt = OptionPrefix + opt
+	For Local i:int = 1 Until AppArgs.Length -1
+		If AppArgs[i] = opt Then Return AppArgs[i+1]
+	Next
 EndFunction
 
 Function PrepareFTPPath:String( url:String )

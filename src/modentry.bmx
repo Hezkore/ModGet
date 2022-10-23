@@ -2,8 +2,6 @@ SuperStrict
 
 Import brl.retro
 
-Import "common.bmx"
-
 Type TModEntry
 	
 	Field Data:String
@@ -29,6 +27,6 @@ Type TModEntry
 		Self.Filetype = Mid( Self.File, Self.File.FindLast( "." ) + 2 )
 		Self.Title = Left( Self.File, Self.File.Length - Self.Filetype.Length -1 )
 		
-		Self.Unique = QuoteIfSpaced( Self.File + "-" + Self.Artist + "/" + Self.Tracker )
+		Self.Unique = Self.File + "-" + Self.Artist + "/" + Self.Tracker
 	EndMethod
 EndType

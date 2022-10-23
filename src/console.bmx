@@ -12,7 +12,7 @@ GCSetMode( 2 )
 If AppArgs.Length < 2 Then Print "Not enough arguments";End
 
 ' Process user arguments
-Select AppArgs[1].ToLower()
+Select AppArgsCommand().ToLower()
 	Case "update"
 		WriteString( StandardIOStream, "Updating database... " )
 		UpdateCache()
@@ -20,7 +20,7 @@ Select AppArgs[1].ToLower()
 	
 	Case "search"
 		PrepareCache()
-		DoSearch( AppArgsFrom(2) )
+		DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) )
 	
 	Case "download"
 		PrepareCache()
@@ -51,10 +51,10 @@ Function PrepareCache()
 	EndIf
 EndFunction
 
-Function DoSearch( text:String )
+Function DoSearch( text:String, fArtist:String, fFile:String, fTracker:String )
 	WriteString( StandardIOStream, "Searching for ~q" + text + "~q... " )
 	
-	Local matches:TList = Database.Search( text )
+	Local matches:TList = Database.Search( text, fArtist, fFile, fTracker )
 	
 	Print( matches.Count() + " matches" )
 	
@@ -69,22 +69,21 @@ Function DoSearch( text:String )
 EndFunction
 
 Function PrintSearchInfo( e:TSearchEntry )
-	Print( e.ModEntry.Unique )
+	Print( QuoteIfSpaced( e.ModEntry.Unique ) )
 	Print( "  " + e.ModEntry.Title + " by " + e.ModEntry.Artist )
 	Print( "  Matching " + e.MatchTags )
 EndFunction
 
 Function DoDownload( text:String )
-	WriteString( StandardIOStream, "Downloading " + text + "..." )
+	WriteString( StandardIOStream, "Downloading " + text + "... " )
 	
-	Local match:TModEntry = Database.GetFromFile( text )
-	If Not match Then match = Database.GetFromTitle( text )
+	Local match:TModEntry = Database.GetFromUnique( text )
 	
 	If match Then
 		Print( "found match" )
 		DownloadModFile( match.Tracker, match.Artist, match.File )
 	Else
-		Print( "no match" )
+		Print( "No match" )
 		Print( "Error: Unable to locate file " + text )
 	EndIf
 EndFunction
@@ -92,11 +91,10 @@ EndFunction
 Function DoPlay( text:String )
 	
 	' Find a match locally
-	Local match:TModEntry = Database.GetFromFile( text )
-	If Not match Then match = Database.GetFromTitle( text )
+	Local match:TModEntry = Database.GetFromUnique( text )
 	
 	If Not match Then
-		Print( "no match" )
+		Print( "No match" )
 		Print( "Error: Unable to locate local file " + text )
 		Return
 	EndIf
@@ -110,11 +108,7 @@ Function DoPlay( text:String )
 	
 	Local driver:TSoloudAudioDriver = TSoloudAudioDriver(GetAudioDriver())
 	Local so:TSoLoud = driver._soloud
-	Local channel:TChannel = PlaySound(song)
+	Local channel:TChannel = PlaySound( song )
 	
 	Input()
-	
-	'While channel.Playing()
-	'	Delay(100)
-	'Wend
 EndFunction
