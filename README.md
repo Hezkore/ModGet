@@ -5,7 +5,7 @@ An APT inspired module file _(MOD music, tracker music)_ downloader and manager.
 ## Description
 
 Download and play all of your favorite tracker music from modland via a simple command-line interface.\
-Supports _.it .s3m .xm_ and _.mod_ files.
+Supports _.IT .S3M .XM_ and _.MOD_ files.
 
 ## Getting Started
 
