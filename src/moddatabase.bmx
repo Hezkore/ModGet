@@ -17,6 +17,7 @@ Type TModDatabase
 	
 	Method New( url:String )
 		
+		If FileSize( AllModsFile ) <= 1 Then Return
 		Local stream:TStream = Readstream( url )
 		Local line:String
 		Local supported:Int

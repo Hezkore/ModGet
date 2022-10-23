@@ -15,9 +15,25 @@ If AppArgs.Length < 2 Then Print "Not enough arguments";End
 Select AppArgsCommand().ToLower()
 	Case "update"
 		WriteString( StandardIOStream, "Updating database... " )
+		LoadCache()
+		Local modCount:Int = Database.Count()
 		UpdateCache()
+		LoadCache()
 		Print( "Done" )
-	
+		WriteString( StandardIOStream, Database.Count() + " mod files available" )
+		If modCount Then
+			Local diff:Int = Database.Count() - modCount
+			WriteString( StandardIOStream, " (" )
+			If diff = 0 Then
+				WriteString( StandardIOStream, "+-0" )
+			ElseIf diff > 0
+				WriteString( StandardIOStream, "+" + diff )
+			Else
+				WriteString( StandardIOStream, diff )
+			EndIf
+			Print( " difference)" )
+		EndIf
+		
 	Case "search"
 		PrepareCache()
 		DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) )
@@ -43,6 +59,7 @@ Function PrepareCache()
 	If NeedsToUpdateCache() Then
 		WriteString( StandardIOStream, "Updating database... " )
 		UpdateCache()
+		LoadCache()
 		Print( "Done" )
 	Else
 		WriteString( StandardIOStream, "Caching database... " )
