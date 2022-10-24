@@ -155,23 +155,28 @@ Function EncodeURL:String( url:String )
 	Return result
 EndFunction
 
-Function DownloadModFile( tracker:String, artist:String, file:String )
+Function DownloadModFile:Int( tracker:String, artist:String, file:String )
 	LastDownloadSize = 0
 	Local folderPath:String = SongFolder + "\" + tracker + "\" + artist
 	CreateDir( FolderPath, True )
 	Local filePath:String = SongFolder + "\" + tracker + "\" + artist + "\" + file
 	Local ftpPath:String = EncodeURL( ModFTPPath + tracker + "/" + artist + "/" + file )
 	
-	Print( "  Remote " + FTP + FTPPath )
-	Print( "  Local " + FilePath )
+	If Filesize( filePath ) > 1 Then
+		Print( "  File already exists, skipping" )
+		Return False
+	EndIf
+	
+	Print( "  Remote " + FTP + ftpPath )
+	Print( "  Local " + filePath )
 	
 	Local curl:TCurlEasy = TCurlEasy.Create()
 	
-	Local stream:TStream = WriteStream( FilePath )
+	Local stream:TStream = WriteStream( filePath )
 	
 	curl.setProgressCallback(progressCallback)
 	curl.setWriteStream( stream )
-	curl.setOptString( CURLOPT_URL, FTP + FTPPath )
+	curl.setOptString( CURLOPT_URL, FTP + ftpPath )
 	
 	WriteString( StandardIOStream, "  0kb " )
 	Function progressCallback:Int(data:Object, dltotal:Long, dlnow:Long, ultotal:Long, ulnow:Long)
@@ -201,6 +206,8 @@ Function DownloadModFile( tracker:String, artist:String, file:String )
 		DeleteFile( FilePath )
 		Quit()
 	EndIf
+	
+	Return True
 EndFunction
 
 Function QuoteIfSpaced:String( text:String )

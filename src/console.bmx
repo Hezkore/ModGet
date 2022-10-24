@@ -53,9 +53,10 @@ Function Main()
 				Local totalDownloadSize:Int
 				Local count:Int
 				For Local e:TSearchEntry = EachIn Database.LastSearch
-					count:+1
-					DoDownload( e.ModEntry )
-					totalDownloadSize:+LastDownloadSize
+					If DoDownload( e.ModEntry ) Then
+						count:+1
+						totalDownloadSize:+LastDownloadSize
+					EndIf
 					If e <> Database.LastSearch.Last() Then Print()
 				Next
 				Print( "~nDownloaded " + count + " file(s) (" + (totalDownloadSize/1024) + "kb)" )
@@ -133,9 +134,9 @@ Function PrintSearchInfo( e:TSearchEntry )
 	Print( "  Matching " + e.MatchTags )
 EndFunction
 
-Function DoDownload( m:TModEntry )
+Function DoDownload:Int( m:TModEntry )
 	Print( "Downloading " + QuoteIfSpaced( m.Unique ) )
-	DownloadModFile( m.Tracker, m.Artist, m.File )
+	Return DownloadModFile( m.Tracker, m.Artist, m.File )
 EndFunction
 
 Function DoPlay( m:TModEntry )
