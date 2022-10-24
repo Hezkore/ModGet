@@ -6,7 +6,7 @@ Import net.libcurl
 Import archive.zip
 
 Const OptionPrefix:String = "-"
-Global SupportedFormats:String[] = [".669", ".amf", ".ams", ".dbm", ".digi", ".dmf", ".dsm", ".far", ".gdm", ".ice", ".imf", ".it", ".itp", ".j2b", ".m15",".mdl", ".med", ".mid", ".mo3", ".mod", ".mptm", ".mt2", ".mtm", ".okt", ".plm", ".psm", ".ptm", ".s3m", ".stm", ".ult", ".umx", ".wow", ".xm"]
+Global SupportedFormats:String[] = [".669", ".amf", ".ams", ".dbm", ".digi", ".dmf", ".dsm", ".far", ".gdm", ".ice", ".imf", ".it", ".itp", ".j2b", ".m15", ".mdl", ".med", ".mid", ".mo3", ".mod", ".mptm", ".mt2", ".mtm", ".okt", ".plm", ".psm", ".ptm", ".s3m", ".stm", ".ult", ".umx", ".wow", ".xm"]
 Const FTP:String = "ftp.modland.com/"
 Const ModFTPPath:String = "pub/modules/"
 Const AllModsFTPArchive:String = "allmods.zip"
@@ -20,7 +20,7 @@ Const AllModsLocalFile:String = "modget.cache"
 ?
 Global AllModsArchive:String = WorkDir + AllModsLocalArchive
 Global AllModsFile:String = WorkDir + AllModsLocalFile
-Global SongFolder:String = GetCustomDir( DT_USERMUSIC )
+Global SongFolder:String = GetCustomDir( DT_USERMUSIC ) + "\modget"
 Global LastDownloadSize:Int
 
 CreateDir( WorkDir, True )
