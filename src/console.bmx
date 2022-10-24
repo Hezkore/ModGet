@@ -9,10 +9,10 @@ Import "moddatabase.bmx"
 ' Main function
 Function Main()
 	GCSetMode( 2 )
-
+	
 	' Do we have enough arguments?
 	If AppArgs.Length < 2 Then Print "Not enough arguments";End
-
+	
 	' Process user arguments
 	Select AppArgsCommand().ToLower()
 		Case "update"
@@ -38,7 +38,7 @@ Function Main()
 			
 		Case "search"
 			PrepareCache()
-			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), , Int(AppArgsOption( "l" )) ) Then
 				For Local e:TSearchEntry = EachIn Database.LastSearch
 					PrintSearchInfo( e )
 					If e <> Database.LastSearch.Last() Then Print()
@@ -47,7 +47,7 @@ Function Main()
 			
 		Case "download"
 			PrepareCache()
-			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), 10 ) Then
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), 10, Int(AppArgsOption( "l" )) ) Then
 				Local totalDownloadSize:Int
 				Local count:Int
 				For Local e:TSearchEntry = EachIn Database.LastSearch
@@ -62,7 +62,7 @@ Function Main()
 			
 		Case "play"
 			PrepareCache()
-			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), 0, Int(AppArgsOption( "l" )) ) Then
 				For Local e:TSearchEntry = EachIn Database.LastSearch
 					DoPlay( e.ModEntry )
 					If e <> Database.LastSearch.Last() Then Print()
@@ -88,7 +88,7 @@ Function PrepareCache()
 	EndIf
 EndFunction
 
-Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:String, maxMatch:Int = 100 )
+Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:String, maxMatch:Int = 100, limit:Int = 0 )
 	WriteString( StandardIOStream, "Searching for " )
 	If text Then
 		WriteString( StandardIOStream, "~q" + text + "~q" )
@@ -107,12 +107,12 @@ Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:Strin
 	
 	WriteString( StandardIOStream, "... " )
 	
-	Local matches:TList = Database.Search( text, fArtist, fFile, fTracker )
+	Local matches:TList = Database.Search( text, fArtist, fFile, fTracker, limit )
 	
 	Print( matches.Count() + " matches" )
 	
 	' Ask the user if he really wants to continue with this many matches
-	If matches.Count() > maxMatch Then
+	If maxMatch > 0 And matches.Count() > maxMatch Then
 		Print( "~nThere are over " + maxMatch + " matches" )
 		WriteString( StandardIOStream, "Are you sure you want to continue? (Y/N) " )
 		StandardIOStream.Flush()

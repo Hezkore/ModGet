@@ -69,7 +69,7 @@ Type TModDatabase
 		Next
 	EndMethod
 	
-	Method Search:TList( text:String, artistFilter:String, fileFilter:String, trackerFilter:String )
+	Method Search:TList( text:String, artistFilter:String, fileFilter:String, trackerFilter:String, limit:Int )
 		text = text.ToLower()
 		
 		artistFilter = artistFilter.ToLower()
@@ -123,6 +123,7 @@ Type TModDatabase
 			If match Then
 				match.CleanMatchTag()
 				Self.LastSearch.AddLast( match )
+				If limit > 0 And Self.LastSearch.Count() >= limit Then Exit
 			EndIf
 		Next
 		

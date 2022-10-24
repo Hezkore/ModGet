@@ -20,16 +20,19 @@ You can filter the search results with: `modget search -a elwood deadlock`
 * ### update - <small><small><small>update list of available mod files</small></small></small>
 
 * ### search [keyword] - <small><small><small>search for mod file</small></small></small>
-	* -a - filter by artist
-	* -f - filter by filename
-	* -t - filter by tracker software or file type
+	* -a [artist] - filter by artist
+	* -f [filename] - filter by filename
+	* -t [tracker/.type] - filter by tracker software or file type
+	* -l [count] - limit matches
 
 * ### download [keyword] - <small><small><small>download mod file</small></small></small>
-	* -a - filter by artist
-	* -f - filter by filename
-	* -t - filter by tracker software or file type
+	* -a [artist] - filter by artist
+	* -f [filename] - filter by filename
+	* -t [tracker/.type] - filter by tracker software or file type
+	* -l [count] - limit matches
 
 * ### play [keyword] - <small><small><small>play mod file (BETA)</small></small></small>
-	* -a - filter by artist
-	* -f - filter by filename
-	* -t - filter by tracker software or file type
+	* -a [artist] - filter by artist
+	* -f [filename] - filter by filename
+	* -t [tracker/.type] - filter by tracker software or file type
+	* -l [count] - limit matches
