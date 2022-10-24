@@ -35,7 +35,7 @@ Function Main()
 				Else
 					WriteString( StandardIOStream, diff )
 				EndIf
-				Print( " difference)" )
+				Print( "  difference)" )
 			EndIf
 			
 		Case "search"
@@ -50,9 +50,15 @@ Function Main()
 		Case "download"
 			PrepareCache()
 			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+				Local totalDownloadSize:Int
+				Local count:Int
 				For Local e:TSearchEntry = EachIn Database.LastSearch
+					count:+1
 					DoDownload( e.ModEntry )
+					totalDownloadSize:+LastDownloadSize
+					If e <> Database.LastSearch.Last() Then Print()
 				Next
+				Print( "~nDownloaded " + count + " file(s) (" + (totalDownloadSize/1024) + "kb)" )
 			EndIf
 			
 		Case "play"
@@ -60,6 +66,7 @@ Function Main()
 			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
 				For Local e:TSearchEntry = EachIn Database.LastSearch
 					DoPlay( e.ModEntry )
+					If e <> Database.LastSearch.Last() Then Print()
 				Next
 			EndIf
 	EndSelect
@@ -83,7 +90,23 @@ Function PrepareCache()
 EndFunction
 
 Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:String )
-	WriteString( StandardIOStream, "Searching for ~q" + text + "~q... " )
+	WriteString( StandardIOStream, "Searching for " )
+	If text Then
+		WriteString( StandardIOStream, "~q" + text + "~q" )
+	Else
+		WriteString( StandardIOStream, "anything" )
+	EndIf
+	
+	Local hasFilter:Int = fArtist Or fFile Or fTracker
+	If hasFilter Then
+		WriteString( StandardIOStream, " (filtered by" )
+		If fArtist Then WriteString( StandardIOStream, " artist: " + fArtist )
+		If fFile Then WriteString( StandardIOStream, " file: " + fFile )
+		If fTracker Then WriteString( StandardIOStream, " tracker: " + fTracker )
+		WriteString( StandardIOStream, ")" )
+	EndIf
+	
+	WriteString( StandardIOStream, "... " )
 	
 	Local matches:TList = Database.Search( text, fArtist, fFile, fTracker )
 	
@@ -111,7 +134,7 @@ Function PrintSearchInfo( e:TSearchEntry )
 EndFunction
 
 Function DoDownload( m:TModEntry )
-	WriteString( StandardIOStream, "Downloading " + m.Title + "... " )
+	Print( "Downloading " + QuoteIfSpaced( m.Unique ) )
 	DownloadModFile( m.Tracker, m.Artist, m.File )
 EndFunction
 

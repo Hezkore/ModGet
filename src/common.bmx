@@ -21,6 +21,7 @@ Const AllModsLocalFile:String = "modget.cache"
 Global AllModsArchive:String = WorkDir + AllModsLocalArchive
 Global AllModsFile:String = WorkDir + AllModsLocalFile
 Global SongFolder:String = GetCustomDir( DT_USERMUSIC )
+Global LastDownloadSize:Int
 
 CreateDir( WorkDir, True )
 
@@ -155,20 +156,32 @@ Function EncodeURL:String( url:String )
 EndFunction
 
 Function DownloadModFile( tracker:String, artist:String, file:String )
+	LastDownloadSize = 0
 	Local folderPath:String = SongFolder + "\" + tracker + "\" + artist
 	CreateDir( FolderPath, True )
 	Local filePath:String = SongFolder + "\" + tracker + "\" + artist + "\" + file
 	Local ftpPath:String = EncodeURL( ModFTPPath + tracker + "/" + artist + "/" + file )
 	
-	Print( "Downloading from " + FTP + FTPPath )
-	Print( "Local destination " + FilePath )
+	Print( "  Remote " + FTP + FTPPath )
+	Print( "  Local " + FilePath )
 	
 	Local curl:TCurlEasy = TCurlEasy.Create()
 	
 	Local stream:TStream = WriteStream( FilePath )
 	
+	curl.setProgressCallback(progressCallback)
 	curl.setWriteStream( stream )
 	curl.setOptString( CURLOPT_URL, FTP + FTPPath )
+	
+	WriteString( StandardIOStream, "  0kb " )
+	Function progressCallback:Int(data:Object, dltotal:Long, dlnow:Long, ultotal:Long, ulnow:Long)
+		If dlnow > 0 Then
+			LastDownloadSize = dltotal
+			' TODO: un-mess this please!
+			If ( Double(dlnow) / Double(dltotal)  ) * 100.0 Mod 10 <= 1 Then WriteString( StandardIOStream, "." )
+		EndIf
+		Return 0
+	EndFunction
 	
 	Local res:Int = curl.perform()
 	
@@ -182,7 +195,7 @@ Function DownloadModFile( tracker:String, artist:String, file:String )
 	If stream then stream.Close()
 	
 	If FileSize( FilePath ) > 1 Then
-		
+		Print( " " + (LastDownloadSize/1024) + "kb" )
 	Else
 		Print( "Error: Unable to download mod file (file " + FileSize( FilePath ) + " bytes)" )
 		DeleteFile( FilePath )
