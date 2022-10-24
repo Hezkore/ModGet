@@ -11,3 +11,5 @@ Framework BRL.StandardIO
 	AppTitle:+" [DEBUG]"
 ?
 AppTitle = "Mod-Get" + AppTitle
+
+Main()

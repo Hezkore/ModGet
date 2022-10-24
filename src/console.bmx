@@ -6,64 +6,67 @@ Import Audio.ModLoader
 Import "common.bmx"
 Import "moddatabase.bmx"
 
-GCSetMode( 2 )
-
 Const MaxMatches:Int = 100
 
-' Do we have enough arguments?
-If AppArgs.Length < 2 Then Print "Not enough arguments";End
+' Main function
+Function Main()
+	GCSetMode( 2 )
 
-' Process user arguments
-Select AppArgsCommand().ToLower()
-	Case "update"
-		WriteString( StandardIOStream, "Updating database... " )
-		LoadCache()
-		Local modCount:Int = Database.Count()
-		UpdateCache()
-		LoadCache()
-		Print( "Done" )
-		WriteString( StandardIOStream, Database.Count() + " mod files available" )
-		If modCount Then
-			Local diff:Int = Database.Count() - modCount
-			WriteString( StandardIOStream, " (" )
-			If diff = 0 Then
-				WriteString( StandardIOStream, "+-0" )
-			ElseIf diff > 0
-				WriteString( StandardIOStream, "+" + diff )
-			Else
-				WriteString( StandardIOStream, diff )
+	' Do we have enough arguments?
+	If AppArgs.Length < 2 Then Print "Not enough arguments";End
+
+	' Process user arguments
+	Select AppArgsCommand().ToLower()
+		Case "update"
+			WriteString( StandardIOStream, "Updating database... " )
+			LoadCache()
+			Local modCount:Int = Database.Count()
+			UpdateCache()
+			LoadCache()
+			Print( "Done" )
+			WriteString( StandardIOStream, Database.Count() + " mod files available" )
+			If modCount Then
+				Local diff:Int = Database.Count() - modCount
+				WriteString( StandardIOStream, " (" )
+				If diff = 0 Then
+					WriteString( StandardIOStream, "+-0" )
+				ElseIf diff > 0
+					WriteString( StandardIOStream, "+" + diff )
+				Else
+					WriteString( StandardIOStream, diff )
+				EndIf
+				Print( " difference)" )
 			EndIf
-			Print( " difference)" )
-		EndIf
-		
-	Case "search"
-		PrepareCache()
-		If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
-			For Local e:TSearchEntry = EachIn Database.LastSearch
-				PrintSearchInfo( e )
-				If e <> Database.LastSearch.Last() Then Print()
-			Next
-		EndIf
-		
-	Case "download"
-		PrepareCache()
-		If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
-			For Local e:TSearchEntry = EachIn Database.LastSearch
-				DoDownload( e.ModEntry )
-			Next
-		EndIf
-		
-	Case "play"
-		PrepareCache()
-		If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
-			For Local e:TSearchEntry = EachIn Database.LastSearch
-				DoPlay( e.ModEntry )
-			Next
-		EndIf
-EndSelect
+			
+		Case "search"
+			PrepareCache()
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+				For Local e:TSearchEntry = EachIn Database.LastSearch
+					PrintSearchInfo( e )
+					If e <> Database.LastSearch.Last() Then Print()
+				Next
+			EndIf
+			
+		Case "download"
+			PrepareCache()
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+				For Local e:TSearchEntry = EachIn Database.LastSearch
+					DoDownload( e.ModEntry )
+				Next
+			EndIf
+			
+		Case "play"
+			PrepareCache()
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+				For Local e:TSearchEntry = EachIn Database.LastSearch
+					DoPlay( e.ModEntry )
+				Next
+			EndIf
+	EndSelect
 
-' End of application
-Quit()
+	' End of application
+	Quit()
+EndFunction
 
 ' Helper functions
 Function PrepareCache()
