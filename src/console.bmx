@@ -6,8 +6,6 @@ Import Audio.ModLoader
 Import "common.bmx"
 Import "moddatabase.bmx"
 
-Const MaxMatches:Int = 100
-
 ' Main function
 Function Main()
 	GCSetMode( 2 )
@@ -49,7 +47,7 @@ Function Main()
 			
 		Case "download"
 			PrepareCache()
-			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), 10 ) Then
 				Local totalDownloadSize:Int
 				Local count:Int
 				For Local e:TSearchEntry = EachIn Database.LastSearch
@@ -90,7 +88,7 @@ Function PrepareCache()
 	EndIf
 EndFunction
 
-Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:String )
+Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:String, maxMatch:Int = 100 )
 	WriteString( StandardIOStream, "Searching for " )
 	If text Then
 		WriteString( StandardIOStream, "~q" + text + "~q" )
@@ -114,8 +112,8 @@ Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:Strin
 	Print( matches.Count() + " matches" )
 	
 	' Ask the user if he really wants to continue with this many matches
-	If matches.Count() > MaxMatches Then
-		Print( "~nThere are over " + MaxMatches + " matches" )
+	If matches.Count() > maxMatch Then
+		Print( "~nThere are over " + maxMatch + " matches" )
 		WriteString( StandardIOStream, "Are you sure you want to continue? (Y/N) " )
 		StandardIOStream.Flush()
 		If StandardIOStream.ReadString( 1 ).ToLower() = "y" Then
