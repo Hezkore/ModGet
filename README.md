@@ -29,7 +29,7 @@ You can filter the search results with: `modget search -a elwood deadlock`
 	* -f - filter by filename
 	* -t - filter by tracker software
 
-* ### play [keyword] - <small><small><small>play mod file</small></small></small>
+* ### play [keyword] - <small><small><small>play mod file (BETA)</small></small></small>
 	* -a - filter by artist
 	* -f - filter by filename
 	* -t - filter by tracker software
