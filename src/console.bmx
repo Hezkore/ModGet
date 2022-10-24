@@ -116,7 +116,7 @@ Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:Strin
 		Print( "~nThere are over " + maxMatch + " matches" )
 		WriteString( StandardIOStream, "Are you sure you want to continue? (Y/N) " )
 		StandardIOStream.Flush()
-		If StandardIOStream.ReadString( 1 ).ToLower() = "y" Then
+		If Left( Input(""), 1 ).ToLower() = "y" Then
 			'Return True
 		Else
 			Return False
@@ -138,6 +138,7 @@ Function DoDownload:Int( m:TModEntry )
 EndFunction
 
 Function DoPlay( m:TModEntry )
+	Print( "Playing " + QuoteIfSpaced( m.Unique ) )
 	Local filePath:String = SongFolder + "\" + m.Tracker + "\" + m.Artist + "\" + m.File
 	Local song:TSound = LoadSound( filePath )
 	If Not song Then
@@ -145,9 +146,13 @@ Function DoPlay( m:TModEntry )
 		Return
 	EndIf
 	
+	Print( "  " + m.Title + " by " + m.Artist )
+	
 	Local driver:TSoloudAudioDriver = TSoloudAudioDriver(GetAudioDriver())
 	Local so:TSoLoud = driver._soloud
 	Local channel:TChannel = PlaySound( song )
 	
-	Input()
+	Input("")
+	
+	channel.Stop()
 EndFunction
