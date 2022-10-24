@@ -155,12 +155,14 @@ Function EncodeURL:String( url:String )
 	Return result
 EndFunction
 
-Function DownloadModFile:Int( tracker:String, artist:String, file:String )
+Function DownloadModFile:Int( tracker:String, artist:String, file:String, extra:String = Null )
 	LastDownloadSize = 0
-	Local folderPath:String = SongFolder + "\" + tracker + "\" + artist
-	CreateDir( FolderPath, True )
-	Local filePath:String = SongFolder + "\" + tracker + "\" + artist + "\" + file
-	Local ftpPath:String = EncodeURL( ModFTPPath + tracker + "/" + artist + "/" + file )
+	Local filePath:String = LocalPathToMod( tracker, artist, file, extra )
+	CreateDir( ExtractDir( filePath ), True )
+	Local ftpPath:String = ModFTPPath + tracker + "/" + artist + "/"
+	If extra Then ftpPath:+extra + "/"
+	ftpPath:+file
+	ftpPath = EncodeURL( ftpPath )
 	
 	If Filesize( filePath ) > 1 Then
 		Print( "  File already exists, skipping" )
@@ -214,6 +216,12 @@ Function QuoteIfSpaced:String( text:String )
 	If text.Contains( " " ) Then ..
 		Return "~q" + text + "~q"
 	Return text
+EndFunction
+
+Function LocalPathToMod:String( tracker:String, artist:String, file:String, extra:String = Null )
+	Local result:String = SongFolder + "\" + Left( artist, 1 ).ToUpper() + "\" + artist + "\" + tracker +"\"
+	If extra Then result:+extra + "\"
+	Return result + artist + " - " + file
 EndFunction
 
 Function Quit()

@@ -10,6 +10,10 @@ Function LoadCache()
 	Database = New TModDatabase( AllModsFile )
 EndFunction
 
+Function LocalPathToMod:String( e:TModEntry )
+	Return LocalPathToMod( e.tracker, e.artist, e.file, e.extra )
+EndFunction
+
 Type TModDatabase
 	
 	Field Mods:TList = CreateList()
@@ -38,9 +42,6 @@ Type TModDatabase
 				EndIf
 			Next
 			If Not supported Then didSkip = True;Continue
-			' Count the / and make sure they're exactly right
-			' TODO: do not use magic numbers & support for longer file paths?
-			If line.Split( "/" ).Length <> 3 didSkip = True;Continue
 			
 			Mods.AddLast( New TModEntry( line ) )
 		Wend
@@ -69,12 +70,13 @@ Type TModDatabase
 		Next
 	EndMethod
 	
-	Method Search:TList( text:String, artistFilter:String, fileFilter:String, trackerFilter:String, limit:Int )
+	Method Search:TList( text:String, artistFilter:String, fileFilter:String, trackerFilter:String, extraFilter:String, limit:Int )
 		text = text.ToLower()
 		
 		artistFilter = artistFilter.ToLower()
 		fileFilter = fileFilter.ToLower()
 		trackerFilter = trackerFilter.ToLower()
+		extraFilter = extraFilter.ToLower()
 		
 		Self.LastSearch.Clear()
 		
@@ -91,6 +93,7 @@ Type TModDatabase
 					If e.Tracker.ToLower() <> trackerFilter Then Continue
 				EndIf
 			EndIf
+			If extraFilter And e.Extra.ToLower() <> extraFilter Then Continue
 			
 			' Reset match
 			match = Null
@@ -98,25 +101,31 @@ Type TModDatabase
 			' Match by unique label
 			If e.Unique.ToLower() = text Then
 				If Not match Then match = New TSearchEntry( e )
-				match.AddMatchTag( "unique" )
+				If text Then match.AddMatchTag( "unique" )
 			EndIf
 			
 			' Match by title
 			If e.Title.ToLower().Contains( text ) Then
 				If Not match Then match = New TSearchEntry( e )
-				match.AddMatchTag( "title" )
+				If text Then match.AddMatchTag( "title" )
 			EndIf
 			
 			' Match by artist
 			If e.Artist.ToLower().Contains( text ) Then
 				If Not match Then match = New TSearchEntry( e )
-				match.AddMatchTag( "artist" )
+				If text Then match.AddMatchTag( "artist" )
 			EndIf
 			
 			' Match by tracker
 			If e.Tracker.ToLower().Contains( text ) Then
 				If Not match Then match = New TSearchEntry( e )
-				match.AddMatchTag( "tracker" )
+				If text Then match.AddMatchTag( "tracker" )
+			EndIf
+			
+			' Match by extra
+			If e.Extra.ToLower().Contains( text ) Then
+				If Not match Then match = New TSearchEntry( e )
+				If text Then match.AddMatchTag( "extra" )
 			EndIf
 			
 			' Add if this is a match

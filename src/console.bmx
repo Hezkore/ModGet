@@ -38,7 +38,7 @@ Function Main()
 			
 		Case "search"
 			PrepareCache()
-			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), , Int(AppArgsOption( "l" )) ) Then
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), AppArgsOption( "e" ), , Int(AppArgsOption( "l" )) ) Then
 				For Local e:TSearchEntry = EachIn Database.LastSearch
 					PrintSearchInfo( e )
 					If e <> Database.LastSearch.Last() Then Print()
@@ -47,7 +47,7 @@ Function Main()
 			
 		Case "download"
 			PrepareCache()
-			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), 10, Int(AppArgsOption( "l" )) ) Then
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), AppArgsOption( "e" ), 10, Int(AppArgsOption( "l" )) ) Then
 				Local totalDownloadSize:Int
 				Local count:Int
 				For Local e:TSearchEntry = EachIn Database.LastSearch
@@ -62,7 +62,7 @@ Function Main()
 			
 		Case "play"
 			PrepareCache()
-			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), 0, Int(AppArgsOption( "l" )) ) Then
+			If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ), AppArgsOption( "e" ), 0, Int(AppArgsOption( "l" )) ) Then
 				For Local e:TSearchEntry = EachIn Database.LastSearch
 					DoPlay( e.ModEntry )
 					If e <> Database.LastSearch.Last() Then Print()
@@ -88,7 +88,7 @@ Function PrepareCache()
 	EndIf
 EndFunction
 
-Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:String, maxMatch:Int = 100, limit:Int = 0 )
+Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:String, fExtra:String, maxMatch:Int = 100, limit:Int = 0 )
 	WriteString( StandardIOStream, "Searching for " )
 	If text Then
 		WriteString( StandardIOStream, "~q" + text + "~q" )
@@ -102,12 +102,13 @@ Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:Strin
 		If fArtist Then WriteString( StandardIOStream, " artist: " + fArtist )
 		If fFile Then WriteString( StandardIOStream, " file: " + fFile )
 		If fTracker Then WriteString( StandardIOStream, " tracker: " + fTracker )
+		If fExtra Then WriteString( StandardIOStream, " extra: " + fExtra )
 		WriteString( StandardIOStream, ")" )
 	EndIf
 	
 	WriteString( StandardIOStream, "... " )
 	
-	Local matches:TList = Database.Search( text, fArtist, fFile, fTracker, limit )
+	Local matches:TList = Database.Search( text, fArtist, fFile, fTracker, fExtra, limit )
 	
 	Print( matches.Count() + " matches" )
 	
@@ -129,12 +130,13 @@ EndFunction
 Function PrintSearchInfo( e:TSearchEntry )
 	Print( QuoteIfSpaced( e.ModEntry.Unique ) )
 	Print( "  " + e.ModEntry.Title + " by " + e.ModEntry.Artist )
-	Print( "  Matching " + e.MatchTags )
+	If e.ModEntry.Extra Then Print( "  " + e.ModEntry.Extra )
+	If e.MatchTags Then Print( "  Matching " + e.MatchTags )
 EndFunction
 
 Function DoDownload:Int( m:TModEntry )
 	Print( "Downloading " + QuoteIfSpaced( m.Unique ) )
-	Return DownloadModFile( m.Tracker, m.Artist, m.File )
+	Return DownloadModFile( m.Tracker, m.Artist, m.File, m.Extra )
 EndFunction
 
 Function DoPlay( m:TModEntry )

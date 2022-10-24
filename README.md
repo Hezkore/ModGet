@@ -1,4 +1,4 @@
-# Modget
+# ModGet
 
 An APT inspired module file _(MOD music, tracker music)_ downloader and manager.
 
@@ -23,18 +23,21 @@ You can filter the search results with: `modget search -a elwood deadlock`
 	* -a [artist] - filter by artist
 	* -f [filename] - filter by filename
 	* -t [tracker/.type] - filter by tracker software or file type
+	* -e [extra] - extra data
 	* -l [count] - limit matches
 
 * ### download [keyword] - <small><small><small>download mod file</small></small></small>
 	* -a [artist] - filter by artist
 	* -f [filename] - filter by filename
 	* -t [tracker/.type] - filter by tracker software or file type
+	* -e [extra] - extra data
 	* -l [count] - limit matches
 
 * ### play [keyword] - <small><small><small>play mod file (BETA)</small></small></small>
 	* -a [artist] - filter by artist
 	* -f [filename] - filter by filename
 	* -t [tracker/.type] - filter by tracker software or file type
+	* -e [extra] - extra data
 	* -l [count] - limit matches
 
 ## Supported formats
