@@ -8,6 +8,8 @@ Import "moddatabase.bmx"
 
 GCSetMode( 2 )
 
+Const MaxMatches:Int = 100
+
 ' Do we have enough arguments?
 If AppArgs.Length < 2 Then Print "Not enough arguments";End
 
@@ -36,25 +38,28 @@ Select AppArgsCommand().ToLower()
 		
 	Case "search"
 		PrepareCache()
-		DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) )
-		For Local e:TSearchEntry = EachIn Database.LastSearch
-			PrintSearchInfo( e )
-			If e <> Database.LastSearch.Last() Then Print()
-		Next
-	
+		If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+			For Local e:TSearchEntry = EachIn Database.LastSearch
+				PrintSearchInfo( e )
+				If e <> Database.LastSearch.Last() Then Print()
+			Next
+		EndIf
+		
 	Case "download"
 		PrepareCache()
-		DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) )
-		For Local e:TSearchEntry = EachIn Database.LastSearch
-			DoDownload( e.ModEntry )
-		Next
-	
+		If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+			For Local e:TSearchEntry = EachIn Database.LastSearch
+				DoDownload( e.ModEntry )
+			Next
+		EndIf
+		
 	Case "play"
 		PrepareCache()
-		DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) )
-		For Local e:TSearchEntry = EachIn Database.LastSearch
-			DoPlay( e.ModEntry )
-		Next
+		If DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) ) Then
+			For Local e:TSearchEntry = EachIn Database.LastSearch
+				DoPlay( e.ModEntry )
+			Next
+		EndIf
 EndSelect
 
 ' End of application
@@ -74,16 +79,26 @@ Function PrepareCache()
 	EndIf
 EndFunction
 
-Function DoSearch( text:String, fArtist:String, fFile:String, fTracker:String )
+Function DoSearch:Int( text:String, fArtist:String, fFile:String, fTracker:String )
 	WriteString( StandardIOStream, "Searching for ~q" + text + "~q... " )
 	
 	Local matches:TList = Database.Search( text, fArtist, fFile, fTracker )
 	
 	Print( matches.Count() + " matches" )
 	
-	' TODO: no magic number & huge print confirmation
-	If matches.Count() > 1000 Then
+	' Ask the user if he really wants to continue with this many matches
+	If matches.Count() > MaxMatches Then
+		Print( "~nThere are over " + MaxMatches + " matches" )
+		WriteString( StandardIOStream, "Are you sure you want to continue? (Y/N) " )
+		StandardIOStream.Flush()
+		If StandardIOStream.ReadString( 1 ).ToLower() = "y" Then
+			'Return True
+		Else
+			Return False
+		EndIf
 	EndIf
+	
+	Return True
 EndFunction
 
 Function PrintSearchInfo( e:TSearchEntry )
