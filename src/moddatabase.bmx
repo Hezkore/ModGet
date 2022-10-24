@@ -89,6 +89,12 @@ Type TModDatabase
 			' Reset match
 			match = Null
 			
+			' Match by unique label
+			If e.Unique.ToLower().Contains( text ) Then
+				If Not match Then match = New TSearchEntry( e )
+				match.AddMatchTag( "unique" )
+			EndIf
+			
 			' Match by title
 			If e.Title.ToLower().Contains( text ) Then
 				If Not match Then match = New TSearchEntry( e )

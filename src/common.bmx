@@ -1,5 +1,6 @@
 SuperStrict
 
+Import brl.retro
 Import brl.volumes
 Import net.libcurl
 Import archive.zip
@@ -51,7 +52,7 @@ Function UpdateCache()
 	
 	If res Then
 		Print( "Error: " + CurlError( res ) )
-		End
+		Quit()
 	EndIf
 	
 	curl.cleanup()
@@ -62,7 +63,7 @@ Function UpdateCache()
 		ExtractCache()
 	Else
 		Print( "Error: Unable to download cache data (file is " + FileSize( AllModsArchive ) + " bytes)" )
-		End
+		Quit()
 	EndIf
 EndFunction
 
@@ -96,7 +97,7 @@ Function ExtractCache()
 		'Print "Cached data"
 	Else
 		Print( "Error: Unable to extract cache data" )
-		End
+		Quit()
 	EndIf
 EndFunction
 
@@ -138,15 +139,26 @@ Function AppArgsOption:String( opt:String )
 	Next
 EndFunction
 
-Function PrepareFTPPath:String( url:String )
-	Return url.Replace( " ", "%20" )
+Function EncodeURL:String( url:String )
+	Local result:String
+	
+	For Local i:Int = 0 Until url.Length
+		If url[i] < 48 Or ..
+				(url[i] > 57 And url[i] < 65 ) Or ..
+					(url[i] > 90 And url[i] < 97 ) Or ..
+						url[i] > 122 Then
+			result:+ "%" + Right( Hex( url[i] ), 2 )
+		Else result:+Chr( url[i] ) EndIf
+	Next
+	
+	Return result
 EndFunction
 
 Function DownloadModFile( tracker:String, artist:String, file:String )
 	Local folderPath:String = SongFolder + "\" + tracker + "\" + artist
 	CreateDir( FolderPath, True )
 	Local filePath:String = SongFolder + "\" + tracker + "\" + artist + "\" + file
-	Local ftpPath:String = PrepareFTPPath( ModFTPPath + tracker + "/" + artist + "/" + file )
+	Local ftpPath:String = EncodeURL( ModFTPPath + tracker + "/" + artist + "/" + file )
 	
 	Print( "Downloading from " + FTP + FTPPath )
 	Print( "Local destination " + FilePath )
@@ -162,7 +174,7 @@ Function DownloadModFile( tracker:String, artist:String, file:String )
 	
 	If res Then
 		Print( "Error: " + CurlError( res ) )
-		End
+		Quit()
 	EndIf
 	
 	curl.cleanup()
@@ -174,7 +186,7 @@ Function DownloadModFile( tracker:String, artist:String, file:String )
 	Else
 		Print( "Error: Unable to download mod file (file " + FileSize( FilePath ) + " bytes)" )
 		DeleteFile( FilePath )
-		End
+		Quit()
 	EndIf
 EndFunction
 
@@ -182,4 +194,9 @@ Function QuoteIfSpaced:String( text:String )
 	If text.Contains( " " ) Then ..
 		Return "~q" + text + "~q"
 	Return text
+EndFunction
+
+Function Quit()
+	Delay( 100 )
+	End
 EndFunction

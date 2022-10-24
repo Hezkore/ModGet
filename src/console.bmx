@@ -37,22 +37,28 @@ Select AppArgsCommand().ToLower()
 	Case "search"
 		PrepareCache()
 		DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) )
+		For Local e:TSearchEntry = EachIn Database.LastSearch
+			PrintSearchInfo( e )
+			If e <> Database.LastSearch.Last() Then Print()
+		Next
 	
 	Case "download"
 		PrepareCache()
-		For Local i:Int = 2 Until AppArgs.Length
-			DoDownload( AppArgs[i] )
+		DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) )
+		For Local e:TSearchEntry = EachIn Database.LastSearch
+			DoDownload( e.ModEntry )
 		Next
 	
 	Case "play"
 		PrepareCache()
-		For Local i:Int = 2 Until AppArgs.Length
-			DoPlay( AppArgs[i] )
+		DoSearch( AppArgsConcat(), AppArgsOption( "a" ), AppArgsOption( "f" ), AppArgsOption( "t" ) )
+		For Local e:TSearchEntry = EachIn Database.LastSearch
+			DoPlay( e.ModEntry )
 		Next
 EndSelect
 
 ' End of application
-End
+Quit()
 
 ' Helper functions
 Function PrepareCache()
@@ -78,11 +84,6 @@ Function DoSearch( text:String, fArtist:String, fFile:String, fTracker:String )
 	' TODO: no magic number & huge print confirmation
 	If matches.Count() > 1000 Then
 	EndIf
-	
-	For Local e:TSearchEntry = EachIn matches
-		PrintSearchInfo( e )
-		If e <> matches.Last() Then Print()
-	Next
 EndFunction
 
 Function PrintSearchInfo( e:TSearchEntry )
@@ -91,32 +92,13 @@ Function PrintSearchInfo( e:TSearchEntry )
 	Print( "  Matching " + e.MatchTags )
 EndFunction
 
-Function DoDownload( text:String )
-	WriteString( StandardIOStream, "Downloading " + text + "... " )
-	
-	Local match:TModEntry = Database.GetFromUnique( text )
-	
-	If match Then
-		Print( "found match" )
-		DownloadModFile( match.Tracker, match.Artist, match.File )
-	Else
-		Print( "No match" )
-		Print( "Error: Unable to locate file " + text )
-	EndIf
+Function DoDownload( m:TModEntry )
+	WriteString( StandardIOStream, "Downloading " + m.Title + "... " )
+	DownloadModFile( m.Tracker, m.Artist, m.File )
 EndFunction
 
-Function DoPlay( text:String )
-	
-	' Find a match locally
-	Local match:TModEntry = Database.GetFromUnique( text )
-	
-	If Not match Then
-		Print( "No match" )
-		Print( "Error: Unable to locate local file " + text )
-		Return
-	EndIf
-	
-	Local filePath:String = SongFolder + "\" + match.Tracker + "\" + match.Artist + "\" + match.File
+Function DoPlay( m:TModEntry )
+	Local filePath:String = SongFolder + "\" + m.Tracker + "\" + m.Artist + "\" + m.File
 	Local song:TSound = LoadSound( filePath )
 	If Not song Then
 		Print( "Error: Unable to locate local file " + filePath )

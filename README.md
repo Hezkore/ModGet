@@ -19,7 +19,7 @@ You can filter the search results with: `modget search -a elwood deadlock`
 
 * ### update - <small><small><small>update list of available mod files</small></small></small>
 
-* ### search [keyword]- <small><small><small>search for mod file</small></small></small>
+* ### search [keyword] - <small><small><small>search for mod file</small></small></small>
 	* -a - filter by artist
 	* -f - filter by filename
 	* -t - filter by tracker software
