@@ -90,7 +90,7 @@ Type TModDatabase
 			match = Null
 			
 			' Match by unique label
-			If e.Unique.ToLower().Contains( text ) Then
+			If e.Unique.ToLower() = text Then
 				If Not match Then match = New TSearchEntry( e )
 				match.AddMatchTag( "unique" )
 			EndIf
