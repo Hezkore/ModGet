@@ -84,7 +84,13 @@ Type TModDatabase
 			' Check filters
 			If artistFilter And e.Artist.ToLower() <> artistFilter Then Continue
 			If fileFilter And e.Title.ToLower() <> fileFilter Then Continue
-			If trackerFilter And e.Tracker.ToLower() <> trackerFilter Then Continue
+			If trackerFilter Then
+				If trackerFilter.StartsWith( "." ) Then
+					If e.Filetype.ToLower() <> trackerFilter[1..] Then Continue
+				Else
+					If e.Tracker.ToLower() <> trackerFilter Then Continue
+				EndIf
+			EndIf
 			
 			' Reset match
 			match = Null

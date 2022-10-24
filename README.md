@@ -22,14 +22,14 @@ You can filter the search results with: `modget search -a elwood deadlock`
 * ### search [keyword] - <small><small><small>search for mod file</small></small></small>
 	* -a - filter by artist
 	* -f - filter by filename
-	* -t - filter by tracker software
+	* -t - filter by tracker software or file type
 
 * ### download [keyword] - <small><small><small>download mod file</small></small></small>
 	* -a - filter by artist
 	* -f - filter by filename
-	* -t - filter by tracker software
+	* -t - filter by tracker software or file type
 
 * ### play [keyword] - <small><small><small>play mod file (BETA)</small></small></small>
 	* -a - filter by artist
 	* -f - filter by filename
-	* -t - filter by tracker software
+	* -t - filter by tracker software or file type
