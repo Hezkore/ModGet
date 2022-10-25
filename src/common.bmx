@@ -219,9 +219,9 @@ Function QuoteIfSpaced:String( text:String )
 EndFunction
 
 Function LocalPathToMod:String( tracker:String, artist:String, file:String, extra:String = Null )
-	Local result:String = SongFolder + "\" + artist + "\" + tracker + "\"
+	Local result:String = SongFolder + "\" + artist.Trim() + "\" + tracker + "\"
 	If extra Then result:+extra.Replace( "-", " " ) + "\"
-	Return result + artist + " - " + file
+	Return result + artist.Trim() + " - " + file.Trim()
 EndFunction
 
 Function Quit()
